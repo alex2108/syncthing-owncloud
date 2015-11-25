@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -20,11 +21,12 @@ var c = make(chan string,10000)
 
 // config for connection to syncthing
 type Config struct {
-	url      string
-	ApiKey   string
-	insecure bool
-	occpath  string
-	ocuser   string
+	url         string
+	ApiKey      string
+	insecure    bool
+	occpath     string
+	ocuser      string
+	apikeyStdin bool
 }
 
 
@@ -105,6 +107,7 @@ func main() {
 	occpath := flag.String("occpath", "", "path to owncloud occ command")
 	ocuser := flag.String("ocuser", "", "owncloud user")
 	insecure := flag.Bool("i", false, "skip verification of SSL certificate")
+	apikeyStdin := flag.Bool("apikey-from-stdin", false, "use api key from stdin")
 	flag.Parse()
 
 	config.url = *url
@@ -112,6 +115,20 @@ func main() {
 	config.ApiKey = *apikey
 	config.occpath = *occpath
 	config.ocuser = *ocuser
+	config.apikeyStdin = *apikeyStdin
+	
+	
+	if config.apikeyStdin {
+		log.Println("Enter api key:")
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+		
+		if err != nil {
+			log.Println("Error reading api key from stdin")
+			log.Fatal(err)
+		}
+		config.ApiKey = input
+	}
 	
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
