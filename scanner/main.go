@@ -76,6 +76,7 @@ func main_loop() {
 		err := readEvents()
 		if err != nil {
 			defer initialize()
+			time.Sleep(5 * time.Second)
 			log.Println("error while reading events:",err)
 			return
 		}
@@ -85,10 +86,8 @@ func main_loop() {
 
 }
 
-
 func externalRunner() {
 	for file := range c {
-		// /package/host/localhost/php-5.6/bin/php -f /var/www/virtual/agraf/html/owncloud/console.php files:scan --path="alex/files/$2"
 		out,err := exec.Command("php", "-f",config.occpath,"files:scan","--path="+config.ocuser+"/files/"+file).Output()
 		if err != nil {
 			log.Fatal(err)
@@ -133,6 +132,9 @@ func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	
+	
+	log.Println("starting externalRunner")
+	go externalRunner()
 	initialize()
 }
 
