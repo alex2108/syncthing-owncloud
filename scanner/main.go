@@ -33,6 +33,7 @@ type Config struct {
 	occpath     string
 	ocuser      string
 	apikeyStdin bool
+	stfolder    string
 }
 
 
@@ -65,7 +66,7 @@ func readEvents() error {
 
 		for _, event := range events {
 			// handle different events
-			if event.Type == "ItemFinished" && event.Data.Folder == "cloud" {
+			if event.Type == "ItemFinished" && event.Data.Folder == config.stfolder {
 				log.Println("folder:",event.Data.Folder,"file",event.Data.Item)
 				c <- event.Data.Item
 			} 
@@ -111,6 +112,7 @@ func main() {
 	apikey := flag.String("api", "", "syncthing api key")
 	occpath := flag.String("occpath", "", "path to owncloud occ command")
 	ocuser := flag.String("ocuser", "", "owncloud user")
+	stfolder := flag.String("stfolder", "cloud", "syncthing folder name")
 	insecure := flag.Bool("i", false, "skip verification of SSL certificate")
 	apikeyStdin := flag.Bool("apikey-from-stdin", false, "use api key from stdin")
 	flag.Parse()
@@ -121,6 +123,7 @@ func main() {
 	config.occpath = *occpath
 	config.ocuser = *ocuser
 	config.apikeyStdin = *apikeyStdin
+	config.stfolder = *stfolder
 	
 	
 	if config.apikeyStdin {
