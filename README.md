@@ -1,4 +1,5 @@
-# syncthing-owncloud
+# scanner
+
 
 the scanner uses the event API of syncthing to scan files in owncloud on changes
 
@@ -12,3 +13,18 @@ For a password protected syncthing instance the apikey needs to be provided eith
 
 
 In case your php needs to be run in a special way, [this](https://github.com/alex2108/syncthing-owncloud/blob/master/scanner/main.go#L92) line needs to be adjusted.
+
+# versioner
+
+The `archive` program is used for the external versioner in syncthing. It takes three parameters, the first two are the folder path and path insidde the folder like for the external versioner, the third argument is the path to the version folder. Therefore a small script as wrapper for the external versioner is needed, for example:
+```
+#!/bin/bash
+/path/to/archive "$1" "$2" "/path/to/owncloud/data/owncloudUser/files_versions"
+```
+This small script is then set for the external versioner in syncthing.
+
+The `clean` program can be used to automatically clean out versions like the staggered versioner of syncthing does. This can be run as a cronjob. It takes the version path as first argument:
+```
+/path/to/clean /path/to/owncloud/data/owncloudUser/files_versions
+
+```
