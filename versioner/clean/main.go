@@ -16,7 +16,6 @@ import (
 	"time"
 )
 
-
 type Interval struct {
 	step int64
 	end  int64
@@ -24,49 +23,41 @@ type Interval struct {
 
 // The type holds our configuration
 type Staggered struct {
-	versionsPath  string
-	interval      [4]Interval
+	versionsPath string
+	interval     [4]Interval
 }
 
 var debug bool = false
-
-
-
 
 func main() {
 
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	
-	flag.Parse()
-	args:=flag.Args()
 
-	log.Println("cleaning:",args[0])
-	
+	flag.Parse()
+	args := flag.Args()
+
+	log.Println("cleaning:", args[0])
+
 	versionsDir := args[0]
-	
+
 	var maxAge int64 = 365
 
-
 	s := Staggered{
-		versionsPath:  versionsDir,
+		versionsPath: versionsDir,
 		interval: [4]Interval{
-			Interval{30, 3600},               // first hour -> 30 sec between versions
-			Interval{3600, 86400},            // next day -> 1 h between versions
-			Interval{86400, 592000},          // next 30 days -> 1 day between versions
-			Interval{604800, maxAge * 86400}, // next year -> 1 week between versions
+			{30, 3600},               // first hour -> 30 sec between versions
+			{3600, 86400},            // next day -> 1 h between versions
+			{86400, 592000},          // next 30 days -> 1 day between versions
+			{604800, maxAge * 86400}, // next year -> 1 week between versions
 		},
 	}
-	
+
 	s.clean()
 
-	
-	
 }
 
-
 func (v Staggered) clean() {
-
 
 	if debug {
 		log.Println("Versioner clean: Cleaning", v.versionsPath)
@@ -162,15 +153,11 @@ func (v Staggered) expire(versions []string) {
 			log.Printf("non-file %q is named like a file version", file)
 			continue
 		}
-		
-		
-		
-		
-		
+
 		versionTimeArchive := fi.ModTime()
 		ageArchive := int64(time.Since(versionTimeArchive).Seconds())
 
-		// If the file is older than the max age 
+		// If the file is older than the max age
 		// time of archive counts here to prevent instant deletion of old files, modification time for intervals
 		if lastIntv := v.interval[len(v.interval)-1]; lastIntv.end > 0 && ageArchive > lastIntv.end {
 			log.Println("Versioner: File over maximum age -> delete ", file)
@@ -181,7 +168,6 @@ func (v Staggered) expire(versions []string) {
 			}
 			continue
 		}
-		
 
 		versionTimeInt, err := strconv.ParseInt(strings.Replace(filepath.Ext(file), ".v", "", 1), 10, 0)
 		if err != nil {
@@ -190,9 +176,8 @@ func (v Staggered) expire(versions []string) {
 			}
 			continue
 		}
-		versionTime := time.Unix(versionTimeInt,0)
+		versionTime := time.Unix(versionTimeInt, 0)
 		age := int64(time.Since(versionTime).Seconds())
-		
 
 		// If it's the first (oldest) file in the list we can skip the interval checks
 		if firstFile {

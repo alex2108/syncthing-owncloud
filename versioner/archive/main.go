@@ -8,14 +8,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"fmt"
 	"time"
 )
-
 
 type Interval struct {
 	step int64
@@ -24,43 +23,32 @@ type Interval struct {
 
 // The type holds our configuration
 type Staggered struct {
-	versionsPath  string
-	repoPath      string
+	versionsPath string
+	repoPath     string
 }
 
-
-
-
 func main() {
-	
+
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	
-	flag.Parse()
-	args:=flag.Args()
 
+	flag.Parse()
+	args := flag.Args()
 
 	versionsDir := args[2]
 
-	repoPath :=args[0];
-
-
+	repoPath := args[0]
 
 	s := Staggered{
-		versionsPath:  versionsDir,
-		repoPath:      repoPath,
+		versionsPath: versionsDir,
+		repoPath:     repoPath,
 	}
-	
-	s.Archive(strings.Join(args[0:2],"/"))
 
-	
-	
+	s.Archive(strings.Join(args[0:2], "/"))
+
 }
 
-
 func (v Staggered) Archive(filePath string) error {
-
-
 
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
@@ -85,7 +73,6 @@ func (v Staggered) Archive(filePath string) error {
 
 	log.Println("archiving", filePath)
 
-
 	file := filepath.Base(filePath)
 	inRepoPath, err := filepath.Rel(v.repoPath, filepath.Dir(filePath))
 	if err != nil {
@@ -101,7 +88,7 @@ func (v Staggered) Archive(filePath string) error {
 	}
 	modTime := fileInfo.ModTime().Unix()
 
-	ver :=  file + ".v" + fmt.Sprintf("%010d", modTime)
+	ver := file + ".v" + fmt.Sprintf("%010d", modTime)
 	dst := filepath.Join(dir, ver)
 
 	log.Println("moving to", dst)
