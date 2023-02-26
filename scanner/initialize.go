@@ -17,7 +17,7 @@ func getStartTime() (string, error) {
 	type StStatus struct {
 		StartTime string
 	}
-	out, err := query_syncthing(config.url + "/rest/system/status")
+	out, err := querySyncthing(config.url + "/rest/system/status")
 
 	if err != nil {
 		log.Println(err)
@@ -46,9 +46,9 @@ func initialize() {
 	if startTime != currentStartTime {
 		log.Println("syncthing restarted at", currentStartTime)
 		startTime = currentStartTime
-		since_events = 0
+		sinceEvents = 0
 	}
 	log.Println("starting main loop")
-	main_loop()
+	mainLoop()
 
 }
