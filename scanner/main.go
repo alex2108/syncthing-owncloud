@@ -289,13 +289,13 @@ func main() {
 	if config.apikeyStdin {
 		log.Println("Enter api key:")
 		reader := bufio.NewReader(os.Stdin)
-		input, err := reader.ReadString('\n')
+		input, _, err := reader.ReadLine()
 
 		if err != nil {
 			log.Println("Error reading api key from stdin")
 			log.Fatal(err)
 		}
-		config.ApiKey = input
+		config.ApiKey = string(input)
 	}
 
 	log.SetOutput(os.Stdout)
