@@ -9,8 +9,6 @@ services:
       - PGID=1000
     volumes:
      - ./syncthing:/var/syncthing
-     - ./versioner/archive:/versioner/archive:ro
-     - ./versioner/clean/clean:/versioner/clean/clean:ro
      - ./data:/nextcloud_data
     network_mode: host
     restart: unless-stopped
@@ -26,12 +24,6 @@ services:
       - ./scanner/scanner:/scanner/scanner:ro
       - ./custom-services.d:/custom-services.d:ro
       - ./syncthing:/var/syncthing
-      # Uncomment and change these values as instructed in the README
-      # - ./syncthing/versions/var/syncthing/user1:/data/user1/files_versions/sync
-      # - ./syncthing/versions/var/syncthing/user2:/data/user2/files_versions/sync
-      # # To support file versioning in shared folders, don't forget to mount the versions for all users
-      # - ./syncthing/versions/var/syncthing/shared:/data/user1/files_versions/shared
-      # - ./syncthing/versions/var/syncthing/shared:/data/user2/files_versions/shared
     ports:
       - 8080:80
       - 8443:443
