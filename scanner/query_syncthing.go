@@ -1,4 +1,4 @@
-// Copyright (C) 2015 Alexander Graf.
+// Copyright (C) 2023 Jip de Beer, Alexander Graf.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -8,14 +8,14 @@ package main
 
 import (
 	"crypto/tls"
+	"io/ioutil"
 	"log"
-	"time"
 	"net"
 	"net/http"
-	"io/ioutil"
+	"time"
 )
 
-func query_syncthing(url string) (string, error) {
+func querySyncthing(url string) (string, error) {
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -34,13 +34,8 @@ func query_syncthing(url string) (string, error) {
 		},
 	}
 
-
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("X-API-Key", config.ApiKey)
-
-	//if config.username != "" || config.password != "" {
-	//	req.SetBasicAuth(config.username, config.password)
-	//}
 
 	response, err := client.Do(req)
 
@@ -59,5 +54,4 @@ func query_syncthing(url string) (string, error) {
 		}
 		return string(contents), err
 	}
-	return "", err
 }

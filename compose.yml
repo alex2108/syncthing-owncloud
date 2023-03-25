@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+
+  syncthing:
+    image: syncthing/syncthing:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+     - ./syncthing:/var/syncthing
+     - ./data:/nextcloud_data
+    network_mode: host
+    restart: unless-stopped
+
+  nextcloud:
+    image: linuxserver/nextcloud:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      - ./data:/data
+      - ./config:/config
+      - ./scanner/scanner:/scanner/scanner:ro
+      - ./custom-services.d:/custom-services.d:ro
+      - ./syncthing:/var/syncthing
+    ports:
+      - 8080:80
+      - 8443:443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+      - OCCPATH=/config/www/nextcloud/occ
+      - SYNCTHING_URL=https://172.17.0.1:8384
+      - SKIP_SYNCTHING_SSL_VALIDATION=1
+      # Uncomment and change these values as instructed in the README
+      # - NC_ST_MAPPING_1=user1/sync/sc9k7-cy4mw
+      # - NC_ST_MAPPING_2=user2/sync/afnbz-xjlqq
+      # - NC_ST_MAPPING_3=user1/shared/7wvjw-g4m3c
+  db:
+    image: postgres:15.2-alpine
+    restart: unless-stopped
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=ReplaceWithSecurePassword
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - TZ=Europe/Amsterdam
+      - PGTZ=Europe/Amsterdam
